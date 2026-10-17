@@ -40,6 +40,15 @@ class MoveWorld extends Message {
     public var move: Vector2D;
     public function new(p: Vector2D) {super(); move = p;}
 }
+class SpawnBloodSpray extends Message {
+    public var pos: Vector2D;
+    public function new(p: Vector2D) {super(); pos = p;}
+}
+class WeaponDamageCheck extends Message {
+    public var prev: Vector2D;
+    public var pos: Vector2D;
+    public function new(pr: Vector2D, p: Vector2D) {super(); prev = pr; pos = p;}
+}
 class StartLevel extends Message {
     public var levelId: Int;
     public var delete: Bool;

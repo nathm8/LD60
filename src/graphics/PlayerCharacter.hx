@@ -30,15 +30,17 @@ class PlayerCharacter extends Object implements Updateable implements MessageLis
     var frameTimeTotal = 0.25;
 
     var body: Bitmap;
-    static var init = false;
-    static var stand: Tile;
-    static var walk: Tile;
-    static var attack: Tile;
+    var stand: Tile;
+    var walk: Tile;
+    var attack: Tile;
 
     var upperArm: Bitmap;
     var lowerArm: Bitmap;
     var weapon: Bitmap;
+    var weaponPoint: Object;
     var bones = new Array<Bone>();
+
+    var previousWeaponPointPosition: Vector2D;
 
     public function new(p: Object) {
         super(p);
@@ -65,6 +67,9 @@ class PlayerCharacter extends Object implements Updateable implements MessageLis
         t.setCenterRatio(0.1, 0.5);
         weapon = new Bitmap(t, lowerArm);
         weapon.y = 20;
+
+        weaponPoint = new Object(weapon);
+        weaponPoint.x = 15;
 
         bones = [{length: 20, angle: 0}, {length: 19, angle: 0}, {length: 22, angle: Math.PI/2}];
 
@@ -98,6 +103,7 @@ class PlayerCharacter extends Object implements Updateable implements MessageLis
         upperArm.rotation += Math.PI/2;
         weapon.rotation += Math.PI/2;
 
+        // Move
         var dirc = new Vector2D();
         if (movingLeft)
             dirc -= new Vector2D(1, 0);
@@ -116,12 +122,12 @@ class PlayerCharacter extends Object implements Updateable implements MessageLis
 
         // constrict PC within bounds
         var diff = new Vector2D();
-        if (body.x < 200) {
-            diff.x = body.x - 200;
-            body.x = 200;
-        } if (body.x > 1400) {
-            diff.x = body.x - 1400;
-            body.x = 1400;
+        if (body.x < 400) {
+            diff.x = body.x - 400;
+            body.x = 400;
+        } if (body.x > 1200) {
+            diff.x = body.x - 1200;
+            body.x = 1200;
         } if (body.y < 400) {
             diff.y = 400 - body.y;
             body.y = 400;
@@ -131,6 +137,11 @@ class PlayerCharacter extends Object implements Updateable implements MessageLis
         }
         if (diff != new Vector2D())
             MessageManager.send(new MoveWorld(diff));
+
+        // check for damage
+        var p = weaponPoint.getAbsPos().getPosition();
+        MessageManager.send(new WeaponDamageCheck(previousWeaponPointPosition, p));
+        previousWeaponPointPosition = p;
 
         return false;
     }

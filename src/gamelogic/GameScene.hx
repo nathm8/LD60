@@ -1,5 +1,6 @@
 package gamelogic;
 
+import graphics.BloodSpray;
 import graphics.Sky;
 import utilities.RNGManager;
 import graphics.Porcupine;
@@ -13,6 +14,7 @@ import utilities.MessageManager;
 class GameScene extends Scene implements MessageListener {
 
     var updateables = new Array<Updateable>();
+    var background: Background;
 
     public var isPaused(default, set) = false;
 
@@ -23,13 +25,13 @@ class GameScene extends Scene implements MessageListener {
 
         MessageManager.addListener(this);
 
-        var bg = new Background(this);
+        background = new Background(this);
 
-        updateables.push(bg);
-        updateables.push(new PlayerCharacter(bg));
+        updateables.push(background);
+        updateables.push(new PlayerCharacter(background));
 
         for (_ in 0...3) {
-            var p = new Porcupine(bg);
+            var p = new Porcupine(background);
             p.x = 900 + RNGManager.srand(600);
             p.y = 400 + RNGManager.srand(200);
             updateables.push(p);
@@ -51,9 +53,12 @@ class GameScene extends Scene implements MessageListener {
     }
 
     public function receive(msg:Message):Bool {
-        // levels
         if (Std.isOfType(msg, TogglePause)) {
             isPaused = !isPaused;
+        }
+        if (Std.isOfType(msg, SpawnBloodSpray)) {
+            var pos = cast(msg, SpawnBloodSpray).pos;
+            updateables.push(new BloodSpray(background, pos));
         }
         return false;
     }
