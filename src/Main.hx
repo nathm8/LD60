@@ -1,7 +1,5 @@
 package;
 
-import hxd.Window;
-import h3d.Engine;
 import UIApp;
 import graphics.ui.UIScene;
 import slide.TweenManager;

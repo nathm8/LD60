@@ -1,5 +1,7 @@
 package gamelogic;
 
+import utilities.RNGManager;
+import graphics.Porcupine;
 import graphics.PlayerCharacter;
 import graphics.Background;
 import h2d.filter.Blur;
@@ -39,6 +41,11 @@ class GameScene extends Scene implements MessageListener {
 
         updateables.push(new Background(this));
         updateables.push(new PlayerCharacter(this));
+
+        var p = new Porcupine(this);
+        p.x = 900 + RNGManager.srand(500);
+        p.y = 400 + RNGManager.srand(500);
+        updateables.push(p);
     }
 
     public function update(dt:Float) {

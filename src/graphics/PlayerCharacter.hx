@@ -26,7 +26,8 @@ class PlayerCharacter extends Object implements Updateable implements MessageLis
     var is_attacking = false;
 
     var animation_time = 0.0;
-    var animation_time_total = 0.25;
+    var frame_time = 0.0;
+    var frame_time_total = 0.25;
 
     var body: Bitmap;
     static var init = false;
@@ -73,15 +74,20 @@ class PlayerCharacter extends Object implements Updateable implements MessageLis
     public function update(dt: Float):Bool {
         if (is_moving) {
             animation_time += dt;
-            if (animation_time > animation_time_total) {
-                animation_time = 0;
+            frame_time += dt;
+            var r = Math.sin(Math.PI*2*animation_time);
+            body.rotation = Math.PI/12 * r;
+            if (frame_time > frame_time_total) {
+                frame_time = 0;
                 if (body.tile == stand)
                     body.tile = walk;
                 else
                     body.tile = stand;
             }
-        } else
+        } else {
             body.tile = stand;
+            body.rotation = 0;
+        }
         
         // do IK
         var target = upper_arm.getAbsPos().getPosition() - new Vector2D(Window.getInstance().mouseX, Window.getInstance().mouseY);
