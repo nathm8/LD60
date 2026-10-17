@@ -1,5 +1,6 @@
 package gamelogic;
 
+import graphics.Sky;
 import utilities.RNGManager;
 import graphics.Porcupine;
 import graphics.PlayerCharacter;
@@ -12,19 +13,6 @@ import utilities.MessageManager;
 class GameScene extends Scene implements MessageListener {
 
     var updateables = new Array<Updateable>();
-    var cameraScale = 1.0;
-    var cameraMovingLeft = false;
-    var cameraMovingRight = false;
-    var cameraMovingDown = false;
-    var cameraMovingUp = false;
-    var edgeScrollDistance = 50;
-    var middleMouseMoving = false;
-    var prevX = 0.0;
-    var prevY = 0.0;
-
-    var cameraMinScale = 0.1;
-    var cameraMaxScale = 1.0;
-    var cameraBounds = 2500.0;
 
     public var isPaused(default, set) = false;
 
@@ -32,21 +20,22 @@ class GameScene extends Scene implements MessageListener {
         super();
 
         defaultSmooth = true;
-        // camera.anchorX = 0.5;
-        // camera.anchorY = 0.5;
-        camera.sync(ctx);
 
         MessageManager.addListener(this);
 
-        updateables.push(new Background(this));
-        updateables.push(new PlayerCharacter(this));
+        var bg = new Background(this);
+
+        updateables.push(bg);
+        updateables.push(new PlayerCharacter(bg));
 
         for (_ in 0...3) {
-            var p = new Porcupine(this);
+            var p = new Porcupine(bg);
             p.x = 900 + RNGManager.srand(600);
             p.y = 400 + RNGManager.srand(200);
             updateables.push(p);
         }
+
+        updateables.push(new Sky(this));
     }
 
     public function update(dt:Float) {

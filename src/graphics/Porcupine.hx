@@ -38,10 +38,10 @@ class Porcupine extends Object implements Updateable implements MessageListener 
         var destination = new Vector2D(RNGManager.random(200)-100, RNGManager.random(200)-100);
         body.tile.xFlip = destination.x < 0;
         var time = destination.magnitude/100 * (1 + RNGManager.srand(2, true));
-        Main.tweenManager.animateTo(this, {x: x+destination.x, y: y+destination.y}, time, SmoothStep.easeInOut).start();
-        Main.tweenManager.animateTo(this, {rotation: -Math.PI/12}, time/3, SmoothStep.easeIn,
-            () -> Main.tweenManager.animateTo(this, {rotation: Math.PI/12}, time/3, SmoothStep.easeIn,
-                () -> Main.tweenManager.animateTo(this, {rotation: 0}, time/3, SmoothStep.easeIn).start(),
+        Main.tweenManager.animateTo(body, {x: body.x+destination.x, y: body.y+destination.y}, time, SmoothStep.easeInOut).start();
+        Main.tweenManager.animateTo(body, {rotation: -Math.PI/12}, time/3, SmoothStep.easeIn,
+            () -> Main.tweenManager.animateTo(body, {rotation: Math.PI/12}, time/3, SmoothStep.easeIn,
+                () -> Main.tweenManager.animateTo(body, {rotation: 0}, time/3, SmoothStep.easeIn).start(),
             ).start()).start();
         Main.tweenManager.delay(time + RNGManager.srand(5, true), () -> wander()).start();
     }

@@ -16,5 +16,5 @@ runhl: buildhl
 push: clean buildjs
 	rm -f LD60.zip
 	zip -r LD60.zip index.html bin/game.js bin/game.js.map
-	butler push LD60.zip nathmate/LD60:HTML
-	git push
+	butler push LD60.zip nathmate/Neolithica:HTML
+	# git push
