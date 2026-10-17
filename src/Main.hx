@@ -83,6 +83,7 @@ class Main extends UIApp implements MessageListener {
                     MessageManager.send(new MainMenu());
                 if (event.keyCode == hxd.Key.ENTER)
                     MessageManager.send(new Restart());
+                MessageManager.send(new KeyDown(event.keyCode));
             case EKeyUp:
                 MessageManager.send(new KeyUp(event.keyCode));
             case _:

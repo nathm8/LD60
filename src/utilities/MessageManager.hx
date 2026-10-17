@@ -13,6 +13,10 @@ class MousePush extends Message {
     public var scenePosition: Vector2D;
     public function new(e: Event, p: Vector2D) {super(); event = e; scenePosition = p;}
 }
+class KeyDown extends Message {
+    public var keycode: Int;
+    public function new(k: Int) {super(); keycode = k;}
+}
 class KeyUp extends Message {
     public var keycode: Int;
     public function new(k: Int) {super(); keycode = k;}

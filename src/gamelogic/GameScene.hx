@@ -2,11 +2,8 @@ package gamelogic;
 
 import graphics.PlayerCharacter;
 import graphics.Background;
-import format.agal.Data.Tex;
 import h2d.filter.Blur;
-import h2d.col.Point;
 import h2d.Scene;
-import hxd.Key;
 import gamelogic.Updateable;
 import gamelogic.physics.PhysicalWorld;
 import utilities.MessageManager;
@@ -28,7 +25,7 @@ class GameScene extends Scene implements MessageListener {
     var cameraMaxScale = 1.0;
     var cameraBounds = 2500.0;
 
-    public var isPaused(default, set) = true;
+    public var isPaused(default, set) = false;
 
     public function new() {
         super();
@@ -45,8 +42,6 @@ class GameScene extends Scene implements MessageListener {
     }
 
     public function update(dt:Float) {
-        PhysicalWorld.update(dt);
-
         if (isPaused) return;
 
         var to_remove = new Array<Updateable>();
