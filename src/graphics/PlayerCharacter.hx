@@ -1,5 +1,7 @@
 package graphics;
 
+import utilities.InverseKinematics;
+import hxd.Window;
 import utilities.MessageManager;
 import h2d.Tile;
 import utilities.Vector2D;
@@ -7,6 +9,7 @@ import hxd.Key;
 import utilities.MessageManager.KeyDown;
 import utilities.MessageManager.Message;
 import utilities.MessageManager.MessageListener;
+import utilities.InverseKinematics.Bone;
 import hxd.Res;
 import h2d.Object;
 import gamelogic.Updateable;
@@ -31,6 +34,11 @@ class PlayerCharacter extends Object implements Updateable implements MessageLis
     static var walk: Tile;
     static var attack: Tile;
 
+    var upper_arm: Bitmap;
+    var lower_arm: Bitmap;
+    var weapon: Bitmap;
+    var bones = new Array<Bone>();
+
     public function new(p: Object) {
         super(p);
         stand = Res.img.Stand.toTile().center();
@@ -40,22 +48,49 @@ class PlayerCharacter extends Object implements Updateable implements MessageLis
         body.x = 800;
         body.y = 400;
 
+        // arm-weapon chain
+        var t = Res.img.ArmUpper.toTile();
+        t.setCenterRatio(0.5, 0.1);
+        upper_arm = new Bitmap(t, body);
+        upper_arm.x = 15;
+        upper_arm.y = -50;
+
+        t = Res.img.ArmLower.toTile();
+        t.setCenterRatio(0.5, 0.1);
+        lower_arm = new Bitmap(t, upper_arm);
+        lower_arm.y = 17;
+        
+        t = Res.img.Knife.toTile();
+        t.setCenterRatio(0.1, 0.5);
+        weapon = new Bitmap(t, lower_arm);
+        weapon.y = 20;
+
+        bones = [{length: 20, angle: 0}, {length: 19, angle: 0}, {length: 22, angle: Math.PI/2}];
+
         MessageManager.addListener(this);
     }
 
     public function update(dt: Float):Bool {
-        if (is_moving || is_attacking) {
+        if (is_moving) {
             animation_time += dt;
             if (animation_time > animation_time_total) {
                 animation_time = 0;
-                var alt = is_attacking ? attack : walk;
                 if (body.tile == stand)
-                    body.tile = alt;
+                    body.tile = walk;
                 else
                     body.tile = stand;
             }
         } else
             body.tile = stand;
+        
+        // do IK
+        var target = upper_arm.getAbsPos().getPosition() - new Vector2D(Window.getInstance().mouseX, Window.getInstance().mouseY);
+        InverseKinematics.solve(bones, target);
+        var chain = [upper_arm, lower_arm, weapon];
+        for (i in 0...3)
+            chain[i].rotation = bones[i].angle;
+        upper_arm.rotation += Math.PI/2;
+        weapon.rotation += Math.PI/2;
 
         var dirc = new Vector2D();
         if (moving_left)
@@ -98,12 +133,16 @@ class PlayerCharacter extends Object implements Updateable implements MessageLis
         if (Std.isOfType(msg, KeyDown)) {
             var e = cast(msg, KeyDown);
             if (e.keycode == Key.LEFT || e.keycode == Key.A) {
+                upper_arm.x = -15;
                 moving_left = true;
-                body.scaleX = -1;
+                walk.xFlip = true;
+                stand.xFlip = true;
             }
             if (e.keycode == Key.RIGHT || e.keycode == Key.D) {
                 moving_right = true;
-                body.scaleX = 1;
+                upper_arm.x = 15;
+                walk.xFlip = false;
+                stand.xFlip = false;
             }
             if (e.keycode == Key.UP || e.keycode == Key.W)
                 moving_up = true;
