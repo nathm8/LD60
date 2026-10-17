@@ -117,10 +117,10 @@ class PlayerCharacter extends Object implements Updateable implements MessageLis
         // constrict PC within bounds
         var diff = new Vector2D();
         if (body.x < 100) {
-            diff.x = 100 - body.x;
+            diff.x = body.x - 100;
             body.x = 100;
         } if (body.x > 1500) {
-            diff.x = 1500 - body.x;
+            diff.x = body.x - 1500;
             body.x = 1500;
         } if (body.y < 300) {
             diff.y = 300 - body.y;
@@ -129,6 +129,8 @@ class PlayerCharacter extends Object implements Updateable implements MessageLis
             diff.y = 800 - body.y;
             body.y = 800;
         }
+        if (diff != new Vector2D())
+            MessageManager.send(new MoveWorld(diff));
 
         return false;
     }

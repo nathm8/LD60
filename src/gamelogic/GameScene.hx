@@ -7,7 +7,6 @@ import graphics.Background;
 import h2d.filter.Blur;
 import h2d.Scene;
 import gamelogic.Updateable;
-import gamelogic.physics.PhysicalWorld;
 import utilities.MessageManager;
 
 class GameScene extends Scene implements MessageListener {
@@ -42,10 +41,12 @@ class GameScene extends Scene implements MessageListener {
         updateables.push(new Background(this));
         updateables.push(new PlayerCharacter(this));
 
-        var p = new Porcupine(this);
-        p.x = 900 + RNGManager.srand(500);
-        p.y = 400 + RNGManager.srand(500);
-        updateables.push(p);
+        for (_ in 0...3) {
+            var p = new Porcupine(this);
+            p.x = 900 + RNGManager.srand(600);
+            p.y = 400 + RNGManager.srand(200);
+            updateables.push(p);
+        }
     }
 
     public function update(dt:Float) {

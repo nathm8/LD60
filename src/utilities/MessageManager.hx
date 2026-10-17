@@ -36,6 +36,10 @@ class MouseWheel extends Message {
     public var scenePosition: Vector2D;
     public function new(e: Event, p: Vector2D) {super(); event = e; scenePosition = p;}
 }
+class MoveWorld extends Message {
+    public var move: Vector2D;
+    public function new(p: Vector2D) {super(); move = p;}
+}
 class StartLevel extends Message {
     public var levelId: Int;
     public var delete: Bool;
