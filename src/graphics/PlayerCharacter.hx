@@ -15,6 +15,12 @@ import h2d.Object;
 import gamelogic.Updateable;
 import h2d.Bitmap;
 
+enum WeaponType {
+    Knife;
+    Spear;
+    Bow;
+}
+
 class PlayerCharacter extends Object implements Updateable implements MessageListener {
 
     var movingLeft = false;
@@ -39,6 +45,7 @@ class PlayerCharacter extends Object implements Updateable implements MessageLis
     var weapon: Bitmap;
     var weaponPoint: Object;
     var bones = new Array<Bone>();
+    var equiptWeapon: WeaponType;
 
     var previousWeaponPointPosition = new Vector2D();
 
@@ -79,6 +86,34 @@ class PlayerCharacter extends Object implements Updateable implements MessageLis
         hungerBar = new HungerBar(this);
 
         MessageManager.addListener(this);
+
+        equiptSpear();
+    }
+
+    function equiptKnife() {
+        weapon.remove();
+        var t = Res.img.Knife.toTile();
+        t.setCenterRatio(0.1, 0.5);
+        weapon = new Bitmap(t, lowerArm);
+        weapon.y = 20;
+
+        weaponPoint = new Object(weapon);
+        weaponPoint.x = 15;
+        bones[2].length = 22;
+        equiptWeapon = Knife;
+    }
+    
+    function equiptSpear() {
+        weapon.remove();
+        var t = Res.img.Spear.toTile();
+        t.setCenterRatio(0.33, 0.5);
+        weapon = new Bitmap(t, lowerArm);
+        weapon.y = 20;
+
+        weaponPoint = new Object(weapon);
+        weaponPoint.x = 110;
+        bones[2].length = 110;
+        equiptWeapon = Spear;
     }
 
     public function update(dt: Float):Bool {
@@ -121,10 +156,10 @@ class PlayerCharacter extends Object implements Updateable implements MessageLis
         if (movingDown)
             dirc += new Vector2D(0, 1);
         if (dirc != new Vector2D()) {
-            dirc = 5*dirc.normalize();
+            dirc = 300*dirc.normalize();
             
-            body.x += dirc.x;
-            body.y += dirc.y;
+            body.x += dirc.x*dt;
+            body.y += dirc.y*dt;
         }
 
         // constrict PC within bounds
@@ -149,8 +184,13 @@ class PlayerCharacter extends Object implements Updateable implements MessageLis
         MessageManager.send(new PlayerCollisionCheck(this));
 
         // check for damage
+        var mult = 0.5;
+        if (equiptWeapon == Spear) mult = 1.0;
         var p = weaponPoint.getAbsPos().getPosition();
-        MessageManager.send(new WeaponDamageCheck(previousWeaponPointPosition, p));
+
+        var damage = mult*((previousWeaponPointPosition - p).magnitude - 10);
+        if (damage > 0)
+            MessageManager.send(new WeaponDamageCheck(p, damage));
         previousWeaponPointPosition = p;
 
         // update hunger
@@ -170,7 +210,12 @@ class PlayerCharacter extends Object implements Updateable implements MessageLis
     public function delete() {}
 
     public function receive(msg: Message):Bool {
-        if (Std.isOfType(msg, KeyDown)) {
+        if (Std.isOfType(msg, MouseRelease)) {
+            if (equiptWeapon == Spear) {
+                equiptKnife();
+                // MessageManager.send(new ThrowSpear());
+            }
+        } if (Std.isOfType(msg, KeyDown)) {
             var e = cast(msg, KeyDown);
             if (e.keycode == Key.LEFT || e.keycode == Key.A) {
                 upperArm.x = -15;

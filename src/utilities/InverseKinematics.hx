@@ -6,7 +6,7 @@ typedef Bone = {
 }
 
 final MAX_ITERATIONS = 100;
-final EPSILON = 1e-5;
+final EPSILON = 1e-6;
 
 function polar_to_cartesian(length: Float, angle: Float) : Vector2D {
     return length * new Vector2D(Math.cos(angle), Math.sin(angle));
@@ -40,6 +40,10 @@ class InverseKinematics {
         // do IK
         var joint_tip_index = joints.length - 1;
         for (iterations in 0...MAX_ITERATIONS) {
+            // break check
+            if ((joints[joint_tip_index] - target).magnitude < EPSILON) {
+                break;
+            }
             // forward
             joints[joint_tip_index] = target;
             var i = joint_tip_index - 1;
@@ -51,10 +55,6 @@ class InverseKinematics {
             joints[0] = new Vector2D(0,0);
             for (i in 1...joint_tip_index)
                 joints[i] = joints[i - 1] + bones[i - 1].length * (joints[i] - joints[i - 1]).normalize();
-            // break check
-            if ((joints[joint_tip_index] - target).magnitude < EPSILON) {
-                break;
-            }
         }
 
         // update bones

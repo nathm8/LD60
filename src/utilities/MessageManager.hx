@@ -44,12 +44,13 @@ class MoveWorld extends Message {
 }
 class SpawnBloodSpray extends Message {
     public var pos: Vector2D;
-    public function new(p: Vector2D) {super(); pos = p;}
+    public var damage: Float;
+    public function new(p: Vector2D, d: Float) {super(); pos = p; damage = d;}
 }
 class WeaponDamageCheck extends Message {
-    public var prev: Vector2D;
     public var pos: Vector2D;
-    public function new(pr: Vector2D, p: Vector2D) {super(); prev = pr; pos = p;}
+    public var damage: Float;
+    public function new(p: Vector2D, d: Float) {super(); damage = d; pos = p;}
 }
 class PlayerCollisionCheck extends Message {
     public var player: PlayerCharacter;

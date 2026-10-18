@@ -57,7 +57,7 @@ class BloodSpray extends Object implements MessageListener implements Updateable
 
     var batch: SpriteBatch;
 
-    public function new(p: Object, pos: Vector2D) {
+    public function new(p: Object, pos: Vector2D, amount: Float) {
         super(p);
         x = pos.x;
         y = pos.y;
@@ -65,7 +65,7 @@ class BloodSpray extends Object implements MessageListener implements Updateable
         batch = new SpriteBatch(tile, this);
         batch.hasUpdate = true;
         batch.hasRotationScale = true;
-        for (_ in 0...50+RNGManager.random(50))
+        for (_ in 0...Math.round(amount)+RNGManager.random(Math.round(amount)))
             batch.add(new BloodParticle(tile));
 
         MessageManager.addListener(this);

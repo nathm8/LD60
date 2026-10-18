@@ -26,8 +26,8 @@ class GameScene extends Scene implements MessageListener {
     var splash = true;
     var splashScreen: SplashScreen;
 
-    var timeTillSpawn = 20.0;
-    var timeTillSpawnMax = 15.0;
+    var timeTillSpawn = 0.0;
+    var timeTillSpawnMax = 10.0;
 
     public function new() {
         super();
@@ -51,8 +51,6 @@ class GameScene extends Scene implements MessageListener {
         updateables.push(new Sky(this));
 
         splashScreen = new SplashScreen(this);
-
-        spawnDoodads();
     }
 
     function spawnPorcs() {
@@ -107,8 +105,8 @@ class GameScene extends Scene implements MessageListener {
             isPaused = !isPaused;
         }
         if (Std.isOfType(msg, SpawnBloodSpray)) {
-            var pos = cast(msg, SpawnBloodSpray).pos;
-            updateables.push(new BloodSpray(background, pos));
+            var params = cast(msg, SpawnBloodSpray);
+            updateables.push(new BloodSpray(background, params.pos, params.damage));
         }
         if (Std.isOfType(msg, KeyUp) && splash) {
             splash = false;
