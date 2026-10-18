@@ -35,6 +35,8 @@ class Porcupine extends Object implements Updateable implements MessageListener 
 
         collider = new PixelsCollider(Res.img.PorcHitbox.getPixels());
 
+        scale(1 + RNGManager.srand(0.2));
+
         MessageManager.addListener(this);
     }
 
@@ -74,8 +76,10 @@ class Porcupine extends Object implements Updateable implements MessageListener 
     }
 
     function flee() {
+        if (behaviour == Flee) return;
         behaviour = Flee;
-        var speed = 200 + RNGManager.srand(200, true);
+        body.rotation = 0;
+        var speed = 200 + RNGManager.srand(150 + 50*Sky.night, true);
         velocity = new Vector2D(RNGManager.srand(1), RNGManager.srand(1)).normalize()*speed;
         body.tile.xFlip = velocity.x < 0;
         timeInBehaviour = 0;
@@ -97,10 +101,6 @@ class Porcupine extends Object implements Updateable implements MessageListener 
         return collider.contains(q);
     }
 
-    function playerCollisionCheck(player_pos: Vector2D): Bool {
-        return (player_pos - body.getAbsPos().getPosition()).magnitude < 50;
-    }
-
     public function receive(msg:Message):Bool {
         if (Std.isOfType(msg, MoveWorld)) {
             var params = cast(msg, MoveWorld);
@@ -117,14 +117,18 @@ class Porcupine extends Object implements Updateable implements MessageListener 
             }
         } if (Std.isOfType(msg, PlayerCollisionCheck)) {
             var player = cast(msg, PlayerCollisionCheck).player;
-            // TODO live critter hurt player
-            if (playerCollisionCheck(player.body.getAbsPos().getPosition())) {
+            var v: Vector2D = (player.body.getAbsPos().getPosition() - body.getAbsPos().getPosition());
+            var dist = v.magnitude;
+            if (dist < 50) {
                 if (health > 0 || isEaten) return false;
                 isEaten = true;
                 var tmp = body.tile.xFlip;
                 body.tile = Res.img.PorcEaten.toTile().center();
                 body.tile.xFlip = tmp;
                 MessageManager.send(new AnimalEaten());
+            } if (dist < 200 && Sky.night > 0) {
+                if (health <= 0) return false;
+                flee();
             }
         }
         return false;

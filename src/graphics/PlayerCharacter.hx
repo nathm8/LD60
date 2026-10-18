@@ -86,8 +86,6 @@ class PlayerCharacter extends Object implements Updateable implements MessageLis
         hungerBar = new HungerBar(this);
 
         MessageManager.addListener(this);
-
-        equiptSpear();
     }
 
     function equiptKnife() {
@@ -249,6 +247,10 @@ class PlayerCharacter extends Object implements Updateable implements MessageLis
             isAttacking = false;
         } if (Std.isOfType(msg, AnimalEaten)) {
             hunger = Math.min(hunger + 0.2, 1.0);
+        } if (Std.isOfType(msg, NightPasses)) {
+            var night = cast(msg, NightPasses).number;
+            if (night == 0)
+                equiptSpear();
         }
         return false;
     }

@@ -42,6 +42,10 @@ class MoveWorld extends Message {
     public var move: Vector2D;
     public function new(p: Vector2D) {super(); move = p;}
 }
+class NightPasses extends Message {
+    public var number: Int;
+    public function new(n: Int) {super(); number = n;}
+}
 class SpawnBloodSpray extends Message {
     public var pos: Vector2D;
     public var damage: Float;

@@ -30,6 +30,8 @@ class Sky extends Object implements Updateable implements MessageListener {
     var sleeping = false;
     var text: Text;
 
+    public static var night = 0;
+
     public function new(p: Object) {
         super(p);
 
@@ -103,6 +105,7 @@ class Sky extends Object implements Updateable implements MessageListener {
         sky.color = Vec4.fromColor(SKY_COLOUR_PROGRESSION[0]);
         timeElapsed = 0;
         Main.tweenManager.animateTo(dark, {alpha: 0}, 1).start();
+        Main.tweenManager.delay(1, () -> text.text = "").start();
     }
 
     public function receive(msg:Message):Bool {
@@ -110,11 +113,17 @@ class Sky extends Object implements Updateable implements MessageListener {
             var e = cast(msg, KeyUp);
             if (e.keycode == Key.Z) {
                 if (!canSleep || sleeping) return false;
-                text.text = "";
+                if (night == 0) {
+                    MessageManager.send(new NightPasses(night));
+                    text.text = "you invented Spear!\nclick to throw";
+                } else
+                    text.text = "";
+                night++;
                 sleeping = true;
-                newDay();
+                Main.tweenManager.delay(3, () -> newDay()).start();
             }
-        }
+        } if (Std.isOfType(msg, Restart))
+            night = 0;
         return false;
     }
 }
