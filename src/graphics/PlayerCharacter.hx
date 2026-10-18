@@ -103,7 +103,7 @@ class PlayerCharacter extends Object implements Updateable implements MessageLis
         equiptWeapon = Knife;
     }
     
-    function equiptSpear() {
+    public function equiptSpear() {
         weapon.remove();
         var t = Res.img.Spear.toTile();
         t.setCenterRatio(0.33, 0.5);
@@ -212,8 +212,8 @@ class PlayerCharacter extends Object implements Updateable implements MessageLis
     public function receive(msg: Message):Bool {
         if (Std.isOfType(msg, MouseRelease)) {
             if (equiptWeapon == Spear) {
+                MessageManager.send(new ThrowSpear(weapon.getAbsPos().getPosition()));
                 equiptKnife();
-                // MessageManager.send(new ThrowSpear());
             }
         } if (Std.isOfType(msg, KeyDown)) {
             var e = cast(msg, KeyDown);

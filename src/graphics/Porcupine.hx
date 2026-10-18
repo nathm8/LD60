@@ -1,10 +1,8 @@
 package graphics;
 
-import h2d.col.Collider;
 import h2d.col.PixelsCollider;
 import utilities.MessageManager;
 import utilities.MessageManager.MessageListener;
-import slide.easing.SmoothStep;
 import utilities.RNGManager;
 import utilities.Vector2D;
 import hxd.Res;

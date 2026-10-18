@@ -25,8 +25,8 @@
      inkscape:deskcolor="#d1d1d1"
      inkscape:document-units="mm"
      inkscape:zoom="4.0000001"
-     inkscape:cx="370.62499"
-     inkscape:cy="852.37498"
+     inkscape:cx="431.37499"
+     inkscape:cy="653.37498"
      inkscape:window-width="1919"
      inkscape:window-height="1080"
      inkscape:window-x="0"
@@ -1492,10 +1492,10 @@
        id="g258"
        transform="translate(13.824479,36.644792)" /><g
        id="g195"
-       transform="matrix(-0.00160894,0.31854334,-0.31854334,-0.00160894,209.3687,152.37466)"
+       transform="matrix(-0.00160894,0.31854334,-0.31854334,-0.00160894,211.35307,151.58091)"
        inkscape:transform-center-x="-1.6402453"
        inkscape:transform-center-y="8.5281263"
-       inkscape:export-filename="res/img/Knife.png"
+       inkscape:export-filename="res/img/SpearProjectile.png"
        inkscape:export-xdpi="100"
        inkscape:export-ydpi="100"><path
          id="path190"

@@ -1,5 +1,6 @@
 package gamelogic;
 
+import graphics.SpearProjectile;
 import graphics.Doodad;
 import h2d.Bitmap;
 import utilities.Vector2D;
@@ -107,6 +108,10 @@ class GameScene extends Scene implements MessageListener {
         if (Std.isOfType(msg, SpawnBloodSpray)) {
             var params = cast(msg, SpawnBloodSpray);
             updateables.push(new BloodSpray(background, params.pos, params.damage));
+        }
+        if (Std.isOfType(msg, ThrowSpear)) {
+            var pos = cast(msg, ThrowSpear).pos;
+            updateables.push(new SpearProjectile(pos, background));
         }
         if (Std.isOfType(msg, KeyUp) && splash) {
             splash = false;
