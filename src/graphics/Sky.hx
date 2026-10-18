@@ -1,5 +1,6 @@
 package graphics;
 
+import hxd.res.DefaultFont;
 import utilities.MessageManager;
 import hxd.Key;
 import utilities.MessageManager.KeyUp;
@@ -48,7 +49,7 @@ class Sky extends Object implements Updateable implements MessageListener {
         dark.drawRect(0, 0, 1600, 900);
         dark.alpha = 0.0;
 
-        text = new Text(hxd.res.DefaultFont.get(), this);
+        text = new Text(DefaultFont.get(), this);
         text.x = 800;
         text.y = 450;
         text.scale(2);

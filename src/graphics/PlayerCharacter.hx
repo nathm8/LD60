@@ -40,7 +40,7 @@ class PlayerCharacter extends Object implements Updateable implements MessageLis
     var weaponPoint: Object;
     var bones = new Array<Bone>();
 
-    var previousWeaponPointPosition: Vector2D;
+    var previousWeaponPointPosition = new Vector2D();
 
     var hungerBar: HungerBar;
     var hunger = 0.5;
@@ -82,6 +82,8 @@ class PlayerCharacter extends Object implements Updateable implements MessageLis
     }
 
     public function update(dt: Float):Bool {
+        if (hunger == 0) return false;
+
         if (isMoving) {
             animationTime += dt;
             frameTime += dt;
@@ -152,8 +154,15 @@ class PlayerCharacter extends Object implements Updateable implements MessageLis
         previousWeaponPointPosition = p;
 
         // update hunger
-        hunger -= dt/50;
+        hunger = Math.max(hunger - dt/50, 0);
         hungerBar.update(hunger);
+        if (hunger == 0)
+            Main.tweenManager.delay(5, () -> MessageManager.send(new Restart())).start();
+
+        if (hunger == 0) {
+            Main.tweenManager.animateTo(body, {alpha: 0}, 3).start();
+            Main.tweenManager.animateTo(body, {y: y-20}, 3).start();
+        }
 
         return false;
     }
