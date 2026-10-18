@@ -29,7 +29,7 @@ class PlayerCharacter extends Object implements Updateable implements MessageLis
     var frameTime = 0.0;
     var frameTimeTotal = 0.25;
 
-    var body: Bitmap;
+    public var body: Bitmap;
     var stand: Tile;
     var walk: Tile;
     var attack: Tile;
@@ -41,6 +41,9 @@ class PlayerCharacter extends Object implements Updateable implements MessageLis
     var bones = new Array<Bone>();
 
     var previousWeaponPointPosition: Vector2D;
+
+    var hungerBar: HungerBar;
+    var hunger = 0.5;
 
     public function new(p: Object) {
         super(p);
@@ -72,6 +75,8 @@ class PlayerCharacter extends Object implements Updateable implements MessageLis
         weaponPoint.x = 15;
 
         bones = [{length: 20, angle: 0}, {length: 19, angle: 0}, {length: 22, angle: Math.PI/2}];
+
+        hungerBar = new HungerBar(this);
 
         MessageManager.addListener(this);
     }
@@ -138,10 +143,17 @@ class PlayerCharacter extends Object implements Updateable implements MessageLis
         if (diff != new Vector2D())
             MessageManager.send(new MoveWorld(diff));
 
+        // check for collision
+        MessageManager.send(new PlayerCollisionCheck(this));
+
         // check for damage
         var p = weaponPoint.getAbsPos().getPosition();
         MessageManager.send(new WeaponDamageCheck(previousWeaponPointPosition, p));
         previousWeaponPointPosition = p;
+
+        // update hunger
+        hunger -= dt/50;
+        hungerBar.update(hunger);
 
         return false;
     }
@@ -181,6 +193,8 @@ class PlayerCharacter extends Object implements Updateable implements MessageLis
             isAttacking = true;
         } if (Std.isOfType(msg, MouseRelease)) {
             isAttacking = false;
+        } if (Std.isOfType(msg, AnimalEaten)) {
+            hunger = Math.min(hunger + 0.2, 1.0);
         }
         return false;
     }

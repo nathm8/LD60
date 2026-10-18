@@ -1,5 +1,6 @@
 package utilities;
 
+import graphics.PlayerCharacter;
 import hxd.fs.FileEntry;
 import hxd.Event;
 import utilities.Vector2D;
@@ -8,6 +9,7 @@ class Message {public function new(){}}
 
 class Victory extends Message {}
 class Restart extends Message {}
+class AnimalEaten extends Message {}
 class MousePush extends Message {
     public var event: Event;
     public var scenePosition: Vector2D;
@@ -48,6 +50,10 @@ class WeaponDamageCheck extends Message {
     public var prev: Vector2D;
     public var pos: Vector2D;
     public function new(pr: Vector2D, p: Vector2D) {super(); prev = pr; pos = p;}
+}
+class PlayerCollisionCheck extends Message {
+    public var player: PlayerCharacter;
+    public function new(p: PlayerCharacter) {super(); player = p;}
 }
 class StartLevel extends Message {
     public var levelId: Int;
