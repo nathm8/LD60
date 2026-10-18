@@ -86,7 +86,7 @@ class Porcupine extends Object implements Updateable implements MessageListener 
             var player = cast(msg, PlayerCollisionCheck).player;
             // TODO live critter hurt player
             if (playerCollisionCheck(player.body.getAbsPos().getPosition())) {
-                if (isEaten) return false;
+                if (health > 0 || isEaten) return false;
                 isEaten = true;
                 var tmp = body.tile.xFlip;
                 body.tile = Res.img.PorcEaten.toTile().center();
