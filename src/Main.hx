@@ -79,7 +79,7 @@ class Main extends UIApp implements MessageListener {
             case EKeyDown:
                 if (event.keyCode == hxd.Key.ESCAPE)
                     MessageManager.send(new MainMenu());
-                if (event.keyCode == hxd.Key.ENTER)
+                if (event.keyCode == hxd.Key.F2)
                     MessageManager.send(new Restart());
                 MessageManager.send(new KeyDown(event.keyCode));
             case EKeyUp:

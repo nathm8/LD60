@@ -1,5 +1,6 @@
 package gamelogic;
 
+import graphics.SplashScreen;
 import graphics.BloodSpray;
 import graphics.Sky;
 import utilities.RNGManager;
@@ -16,7 +17,9 @@ class GameScene extends Scene implements MessageListener {
     var updateables = new Array<Updateable>();
     var background: Background;
 
-    public var isPaused(default, set) = false;
+    public var isPaused(default, set) = true;
+    var splash = true;
+    var splashScreen: SplashScreen;
 
     public function new() {
         super();
@@ -38,6 +41,8 @@ class GameScene extends Scene implements MessageListener {
         }
 
         updateables.push(new Sky(this));
+
+        splashScreen = new SplashScreen(this);
     }
 
     public function update(dt:Float) {
@@ -59,6 +64,11 @@ class GameScene extends Scene implements MessageListener {
         if (Std.isOfType(msg, SpawnBloodSpray)) {
             var pos = cast(msg, SpawnBloodSpray).pos;
             updateables.push(new BloodSpray(background, pos));
+        }
+        if (Std.isOfType(msg, KeyUp) && splash) {
+            splash = false;
+            isPaused = false;
+            splashScreen.visible = false;
         }
         return false;
     }
