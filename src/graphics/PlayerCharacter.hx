@@ -52,7 +52,7 @@ class PlayerCharacter extends Object implements Updateable implements MessageLis
         attack = Res.img.Attack.toTile().center();
         body = new Bitmap(stand, this);
         body.x = 800;
-        body.y = 400;
+        body.y = 450;
 
         // arm-weapon chain
         var t = Res.img.ArmUpper.toTile();
@@ -154,7 +154,7 @@ class PlayerCharacter extends Object implements Updateable implements MessageLis
         previousWeaponPointPosition = p;
 
         // update hunger
-        hunger = Math.max(hunger - dt/50, 0);
+        hunger = Math.max(hunger - dt/75, 0);
         hungerBar.update(hunger);
         if (hunger == 0)
             Main.tweenManager.delay(5, () -> MessageManager.send(new Restart())).start();

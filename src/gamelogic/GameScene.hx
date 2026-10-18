@@ -1,5 +1,10 @@
 package gamelogic;
 
+import graphics.Doodad;
+import h2d.Bitmap;
+import utilities.Vector2D;
+import graphics.Tracks;
+import hxd.Res;
 import graphics.SplashScreen;
 import graphics.BloodSpray;
 import graphics.Sky;
@@ -21,6 +26,9 @@ class GameScene extends Scene implements MessageListener {
     var splash = true;
     var splashScreen: SplashScreen;
 
+    var timeTillSpawn = 20.0;
+    var timeTillSpawnMax = 15.0;
+
     public function new() {
         super();
 
@@ -31,7 +39,7 @@ class GameScene extends Scene implements MessageListener {
         background = new Background(this);
 
         updateables.push(background);
-        updateables.push(new PlayerCharacter(background));
+        updateables.push(new PlayerCharacter(this));
 
         for (_ in 0...3) {
             var p = new Porcupine(background);
@@ -43,10 +51,47 @@ class GameScene extends Scene implements MessageListener {
         updateables.push(new Sky(this));
 
         splashScreen = new SplashScreen(this);
+
+        spawnDoodads();
+    }
+
+    function spawnPorcs() {
+        var r = RNGManager.randomAngle();
+        var p = new Vector2D(1000, 0).rotate(r);
+        var tracks = new Tracks(background);
+        tracks.x = 800 + p.x;
+        tracks.y = 450 + p.y;
+        tracks.rotation = r;
+
+        var d = 1500 + RNGManager.random(1000);
+        p = new Vector2D(d, 0).rotate(r);
+        for (_ in 0...1+RNGManager.random(5)) {
+            var porc = new Porcupine(background);
+            porc.x = 800 + p.x + RNGManager.srand(500);
+            porc.y = 450 + p.y + RNGManager.srand(500);
+            updateables.push(porc);
+        }
+    }
+
+    function spawnDoodads() {
+        for (_ in 0...10+RNGManager.random(10)) {
+            var r = RNGManager.randomAngle();
+            var p = new Vector2D(1500 + RNGManager.random(1000), 0).rotate(r);
+            var doodad = new Doodad(background);
+            doodad.x = 800 + p.x;
+            doodad.y = 450 + p.y;
+        }
     }
 
     public function update(dt:Float) {
         if (isPaused) return;
+
+        timeTillSpawn -= dt;
+        if (timeTillSpawn <= 0) {
+            timeTillSpawn = timeTillSpawnMax;
+            spawnPorcs();
+            spawnDoodads();
+        }
 
         var to_remove = new Array<Updateable>();
         for (u in updateables) {
