@@ -59,6 +59,9 @@ class PlayerCharacter extends Object implements Updateable implements MessageLis
     var hungerBar: HungerBar;
     var hunger = 0.5;
 
+    var archeryCooldown = 0.0;
+    var archeryCooldownMax = 0.25;
+
     public function new(p: Object) {
         super(p);
         stand = Res.img.Stand.toTile().center();
@@ -111,8 +114,6 @@ class PlayerCharacter extends Object implements Updateable implements MessageLis
             equiptSpear();
         if (Sky.night > 1)
             equiptBow();
-
-        equiptBow();
 
         MessageManager.addListener(this);
     }
@@ -168,6 +169,8 @@ class PlayerCharacter extends Object implements Updateable implements MessageLis
 
     public function update(dt: Float):Bool {
         if (hunger == 0) return false;
+
+        archeryCooldown -= dt;
 
         if (isMoving) {
             animationTime += dt;
@@ -326,6 +329,7 @@ class PlayerCharacter extends Object implements Updateable implements MessageLis
             } if (equiptWeapon == Bow && isAttacking) {
                 MessageManager.send(new ShootBow(weapon.getAbsPos().getPosition()));
                 cancelAttack();
+                archeryCooldown = archeryCooldownMax;
             }
         } if (Std.isOfType(msg, KeyDown)) {
             var e = cast(msg, KeyDown);
@@ -358,8 +362,8 @@ class PlayerCharacter extends Object implements Updateable implements MessageLis
             if (e.keycode == Key.DOWN || e.keycode == Key.S)
                 movingDown = false;
         } if (Std.isOfType(msg, MousePush)) {
-            isAttacking = true;
-            if (equiptWeapon == Bow) {
+            if (equiptWeapon == Bow && archeryCooldown <= 0) {
+                isAttacking = true;
                 var tmp = body.tile.xFlip;
                 stand = Res.img.StandBow.toTile().center();
                 stand.xFlip = tmp;
@@ -369,7 +373,7 @@ class PlayerCharacter extends Object implements Updateable implements MessageLis
                 
             }
         } if (Std.isOfType(msg, AnimalEaten)) {
-            hunger = Math.min(hunger + 0.2, 1.0);
+            hunger = Math.min(hunger + cast(msg, AnimalEaten).value, 1.0);
         } if (Std.isOfType(msg, NightPasses)) {
             var night = cast(msg, NightPasses).number;
             if (night == 1)

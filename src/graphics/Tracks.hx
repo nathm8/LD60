@@ -10,9 +10,12 @@ class Tracks extends Object implements MessageListener {
 
     var body: Bitmap;
     
-    public function new(p: Object) {
+    public function new(p: Object, is_porc=true) {
         super(p);
-        new Bitmap(Res.img.PorcTracks.toTile().center(), this);
+        if (is_porc)
+            new Bitmap(Res.img.PorcTracks.toTile().center(), this);
+        else
+            new Bitmap(Res.img.CowTracks.toTile().center(), this);
         MessageManager.addListener(this);
     }
 

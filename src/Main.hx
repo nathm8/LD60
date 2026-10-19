@@ -1,5 +1,6 @@
 package;
 
+import sound.Sounds;
 import UIApp;
 import graphics.ui.UIScene;
 import slide.TweenManager;
@@ -49,12 +50,11 @@ class Main extends UIApp implements MessageListener {
         tweenManager = new TweenManager();
         RNGManager.reset();
         MessageManager.reset();
-        PhysicalWorld.reset();
+        Sounds.reset();
         uiScene = new UIScene();
         setUI2D(uiScene);
         gameScene = new GameScene();
         setScene2D(gameScene);
-        PhysicalWorld.setScene(gameScene);
         MessageManager.addListener(this);
     }
 

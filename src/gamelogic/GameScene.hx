@@ -1,5 +1,6 @@
 package gamelogic;
 
+import graphics.Cow;
 import graphics.Arrow;
 import graphics.Hut;
 import graphics.Porcupine;
@@ -54,6 +55,7 @@ class GameScene extends Scene implements MessageListener {
         updateables.push(new Sky(this));
 
         splashScreen = new SplashScreen(this);
+        MessageManager.send(new SplashScreenStart());
     }
 
     function spawnPorcs() {
@@ -71,6 +73,24 @@ class GameScene extends Scene implements MessageListener {
             porc.x = 800 + p.x + RNGManager.srand(500);
             porc.y = 450 + p.y + RNGManager.srand(500);
             updateables.push(porc);
+        }
+    }
+
+    function spawnCows() {
+        var r = RNGManager.randomAngle();
+        var p = new Vector2D(1000, 0).rotate(r);
+        var tracks = new Tracks(background, false);
+        tracks.x = 800 + p.x;
+        tracks.y = 450 + p.y;
+        tracks.rotation = r;
+
+        var d = 1500 + RNGManager.random(1000);
+        p = new Vector2D(d, 0).rotate(r);
+        for (_ in 0...1+RNGManager.random(3)) {
+            var cow = new Cow(background);
+            cow.x = 800 + p.x + RNGManager.srand(500);
+            cow.y = 450 + p.y + RNGManager.srand(500);
+            updateables.push(cow);
         }
     }
 
@@ -105,6 +125,9 @@ class GameScene extends Scene implements MessageListener {
         var h = new Hut(background);
         h.x = center.x;
         h.y = center.y;
+        var f = new Farmer(background);
+        f.x = center.x;
+        f.y = center.y;
     }
 
     public function update(dt:Float) {
@@ -113,8 +136,15 @@ class GameScene extends Scene implements MessageListener {
         timeTillSpawn -= dt;
         if (timeTillSpawn <= 0) {
             timeTillSpawn = timeTillSpawnMax;
-            spawnPorcs();
             spawnDoodads();
+            if (Sky.night == 0)
+                spawnPorcs();
+            else if (Sky.night == 1) {
+                if (RNGManager.random(2) == 0)
+                    spawnPorcs();
+                else
+                    spawnCows();
+            }
         }
 
         var to_remove = new Array<Updateable>();
@@ -146,6 +176,14 @@ class GameScene extends Scene implements MessageListener {
             splash = false;
             isPaused = false;
             splashScreen.visible = false;
+            MessageManager.send(new SplashScreenEnd());
+        }
+        if (Std.isOfType(msg, NightPasses)) {
+            var n = cast(msg, NightPasses).number;
+            if (n == 1)
+                spawnCows();
+            if (n >= 2)
+                spawnFarm();
         }
         return false;
     }

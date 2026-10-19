@@ -112,7 +112,7 @@ class Farmer extends Object implements Updateable implements MessageListener {
             behaviour = Attack;
             body.rotation = 0;
             timeInBehaviour = 0;
-        } else if (dist < 1000) {
+        } else if (dist < 800) {
             behaviour = Chase;
             body.rotation = 0;
             timeInBehaviour = 0;
@@ -127,7 +127,7 @@ class Farmer extends Object implements Updateable implements MessageListener {
                 frameTime = 0;
                 if (stand.contains(body.tile)) {
                     body.tile = attack[flip_i];
-                    MessageManager.send(new PlayerHurt(0.2));
+                    MessageManager.send(new PlayerHurt(0.3));
                 }
                 else
                     body.tile = stand[flip_i];

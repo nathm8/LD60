@@ -9,7 +9,6 @@ class Message {public function new(){}}
 
 class Victory extends Message {}
 class Restart extends Message {}
-class AnimalEaten extends Message {}
 class PauseHunger extends Message {}
 class UnpauseHunger extends Message {}
 class SmallBeastDeath extends Message {}
@@ -60,6 +59,10 @@ class PlayerHurt extends Message {
     public var damage: Float;
     public function new(d: Float) {super(); damage = d;}
 }
+class AnimalEaten extends Message {
+    public var value: Float;
+    public function new(v: Float) {super(); value = v;}
+}
 class ThrowSpear extends Message {
     public var pos: Vector2D;
     public function new(p: Vector2D) {super(); pos = p;}
@@ -90,6 +93,8 @@ class PlayerPosition extends Message {
 class ToggleMuteGlobal extends Message {}
 class MainMenu extends Message {}
 class TogglePause extends Message {}
+class SplashScreenStart extends Message {}
+class SplashScreenEnd extends Message {}
 
 interface MessageListener {
     public function receive(msg: Message): Bool;
