@@ -294,7 +294,7 @@ class PlayerCharacter extends Object implements Updateable implements MessageLis
     function die() {
         bowString?.clear();
         Main.tweenManager.animateTo(body, {alpha: 0}, 3).start();
-        Main.tweenManager.animateTo(body, {y: y-10}, 3).start();
+        Main.tweenManager.animateTo(body, {y: body.y-100}, 3).start();
         Main.tweenManager.delay(5, () -> MessageManager.send(new Restart())).start();
     }
 
@@ -378,7 +378,7 @@ class PlayerCharacter extends Object implements Updateable implements MessageLis
             var night = cast(msg, NightPasses).number;
             if (night == 1)
                 equiptSpear();
-            if (night > 1)
+            if (night == 2)
                 equiptBow();
         }
         return false;

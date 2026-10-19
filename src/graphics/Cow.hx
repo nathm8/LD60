@@ -28,6 +28,9 @@ class Cow extends Object implements Updateable implements MessageListener {
     var timeInBehaviour = 0.0;
     var totalTimeInBehaviour = 0.0;
 
+    var immunity = 0.0;
+    var immunityMax = 0.25;
+
     var playerPosition: Vector2D;
     
     public function new(p: Object) {
@@ -46,6 +49,7 @@ class Cow extends Object implements Updateable implements MessageListener {
     public function update(dt:Float):Bool {
         if (health <= 0) return false;
         timeInBehaviour += dt;
+        immunity -= dt;
         if (behaviour == Idle && timeInBehaviour > 5)
             wander();
         if (behaviour == Wander) {
@@ -144,9 +148,10 @@ class Cow extends Object implements Updateable implements MessageListener {
             y += params.move.y;
         } if (Std.isOfType(msg, WeaponDamageCheck)) {
             var params = cast(msg, WeaponDamageCheck);
-            if (health <= 0) return false;
+            if (health <= 0 || immunity > 0) return false;
             if (pointCollisionCheck(params.pos)) {
                 health -= params.damage;
+                immunity = immunityMax;
                 if (health <= 0) die();
                 flee();
                 MessageManager.send(new SpawnBloodSpray(params.pos, params.damage));

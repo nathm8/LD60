@@ -108,7 +108,6 @@ class GameScene extends Scene implements MessageListener {
     }
 
     function spawnFarm() {
-        trace("spawn farm");
         var r = RNGManager.randomAngle();
         var center = new Vector2D(2600 + RNGManager.random(1000), 0).rotate(r);
 
@@ -132,6 +131,7 @@ class GameScene extends Scene implements MessageListener {
         var f = new Farmer(background);
         f.x = center.x;
         f.y = center.y;
+        updateables.push(f);
     }
 
     public function update(dt:Float) {
@@ -184,7 +184,6 @@ class GameScene extends Scene implements MessageListener {
         }
         if (Std.isOfType(msg, NightPasses)) {
             var n = cast(msg, NightPasses).number;
-            trace(n);
             if (n == 1)
                 spawnCows();
             if (n >= 2)

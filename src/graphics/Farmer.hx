@@ -36,6 +36,9 @@ class Farmer extends Object implements Updateable implements MessageListener {
     var prev_x = 0.0;
     var moving_left = false;
 
+    var immunity = 0.0;
+    var immunityMax = 0.25;
+
     var stand: Array<Tile>;
     var walk: Array<Tile>;
     var attack: Array<Tile>;
@@ -65,6 +68,8 @@ class Farmer extends Object implements Updateable implements MessageListener {
 
     public function update(dt:Float):Bool {
         if (health <= 0) return false;
+
+        immunity -= dt;
 
         if (prev_x < body.x)
             moving_left = false;
@@ -147,7 +152,7 @@ class Farmer extends Object implements Updateable implements MessageListener {
 
     function die() {
         Main.tweenManager.animateTo(body, {alpha: 0}, 3).start();
-        Main.tweenManager.animateTo(body, {y: y-10}, 3).start();
+        Main.tweenManager.animateTo(body, {y: body.y-100}, 3).start();
         MessageManager.send(new HumanDeath());
     }
 
@@ -167,9 +172,10 @@ class Farmer extends Object implements Updateable implements MessageListener {
             y += params.move.y;
         } if (Std.isOfType(msg, WeaponDamageCheck)) {
             var params = cast(msg, WeaponDamageCheck);
-            if (health <= 0) return false;
+            if (health <= 0 || immunity > 0) return false;
             if (pointCollisionCheck(params.pos)) {
                 behaviour = Chase;
+                immunity = immunityMax;
                 health -= params.damage;
                 if (health <= 0) die();
                 MessageManager.send(new SpawnBloodSpray(params.pos, params.damage));
