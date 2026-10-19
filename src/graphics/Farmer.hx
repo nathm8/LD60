@@ -179,6 +179,7 @@ class Farmer extends Object implements Updateable implements MessageListener {
                 health -= params.damage;
                 if (health <= 0) die();
                 MessageManager.send(new SpawnBloodSpray(params.pos, params.damage));
+                MessageManager.send(new FarmerHurt());
             }
         }
         return false;

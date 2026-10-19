@@ -81,7 +81,7 @@ class GameScene extends Scene implements MessageListener {
 
     function spawnCows() {
         var r = RNGManager.randomAngle();
-        var p = new Vector2D(1000, 0).rotate(r);
+        var p = new Vector2D(1100, 0).rotate(r);
         var tracks = new Tracks(background, false);
         tracks.x = 800 + p.x;
         tracks.y = 450 + p.y;

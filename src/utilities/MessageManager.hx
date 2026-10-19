@@ -97,6 +97,10 @@ class SplashScreenStart extends Message {}
 class SplashScreenEnd extends Message {}
 class NightBegins extends Message {}
 class NightEnds extends Message {}
+class CowChase extends Message {}
+class CowHurt extends Message {}
+class PorcHurt extends Message {}
+class FarmerHurt extends Message {}
 
 interface MessageListener {
     public function receive(msg: Message): Bool;

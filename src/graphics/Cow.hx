@@ -121,6 +121,7 @@ class Cow extends Object implements Updateable implements MessageListener {
         var tmp = body.tile.xFlip;
         body.tile = Res.img.CowAttack.toTile().center();
         body.tile.xFlip = tmp;
+        MessageManager.send(new CowChase());
     }
 
     public function delete() {}
@@ -155,6 +156,7 @@ class Cow extends Object implements Updateable implements MessageListener {
                 if (health <= 0) die();
                 flee();
                 MessageManager.send(new SpawnBloodSpray(params.pos, params.damage));
+                MessageManager.send(new CowHurt());
             }
         } if (Std.isOfType(msg, PlayerCollisionCheck)) {
             var player = cast(msg, PlayerCollisionCheck).player;
@@ -167,7 +169,7 @@ class Cow extends Object implements Updateable implements MessageListener {
                 body.tile = Res.img.CowEaten.toTile().center();
                 body.tile.xFlip = tmp;
                 MessageManager.send(new AnimalEaten(0.5));
-            } if (dist < 400 && behaviour != Flee) {
+            } if (dist < 400 && behaviour != Flee && behaviour != Chase) {
                 if (health <= 0) return false;
                 chase();
             }

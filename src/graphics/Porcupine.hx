@@ -119,6 +119,7 @@ class Porcupine extends Object implements Updateable implements MessageListener 
                 if (health <= 0) die();
                 flee();
                 MessageManager.send(new SpawnBloodSpray(params.pos, params.damage));
+                MessageManager.send(new PorcHurt());
             }
         } if (Std.isOfType(msg, PlayerCollisionCheck)) {
             var player = cast(msg, PlayerCollisionCheck).player;
