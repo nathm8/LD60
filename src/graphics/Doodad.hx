@@ -10,15 +10,19 @@ import h2d.Object;
 
 class Doodad extends Object implements MessageListener {
 
-    var body: Bitmap;
-    
-    public function new(p: Object) {
+    public function new(p: Object, is_crop=false) {
         super(p);
         var t: Tile;
-        t = RNGManager.random(2) == 1 ? Res.img.Rock.toTile().center() : Res.img.Tree.toTile().center();
+        if (is_crop) {
+            t = Res.img.Crop.toTile().center();
+            scale(1.0 + RNGManager.srand(0.2));
+        }
+        else {
+            t = RNGManager.random(2) == 1 ? Res.img.Rock.toTile().center() : Res.img.Tree.toTile().center();
+            scale(1.0 + RNGManager.srand(0.5));
+        }
         t.xFlip = RNGManager.random(2) == 1;
         new Bitmap(t, this);
-        scale(1.0 + RNGManager.srand(0.5));
         MessageManager.addListener(this);
     }
 

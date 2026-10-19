@@ -1,5 +1,6 @@
 package gamelogic;
 
+import graphics.Hut;
 import graphics.Porcupine;
 import graphics.Farmer;
 import graphics.SpearProjectile;
@@ -49,8 +50,7 @@ class GameScene extends Scene implements MessageListener {
             updateables.push(p);
         }
 
-        var f = new Farmer(background);
-        updateables.push(f);
+        spawnFarm();
 
         updateables.push(new Sky(this));
 
@@ -83,6 +83,28 @@ class GameScene extends Scene implements MessageListener {
             doodad.x = 800 + p.x;
             doodad.y = 450 + p.y;
         }
+    }
+
+    function spawnFarm() {
+        var center = new Vector2D(800, 450);
+
+        var prev = center;
+        for (x in 0...150) {
+            var theta = 2*Math.PI*x/20;
+            var radius = 20*theta;
+            var x = center.x + radius*Math.cos(theta);
+            var y = center.y + radius*Math.sin(theta);
+            var p = new Vector2D(x, y);
+            if ((p - prev).magnitude > 100) {
+                var doodad = new Doodad(background, true);
+                doodad.x = x;
+                doodad.y = y;
+                prev = p;
+            }
+        }
+        var h = new Hut(background);
+        h.x = center.x;
+        h.y = center.y;
     }
 
     public function update(dt:Float) {

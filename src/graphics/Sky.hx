@@ -30,6 +30,13 @@ class Sky extends Object implements Updateable implements MessageListener {
     var sleeping = false;
     var text: Text;
 
+    // kill stats
+    var small = 0;
+    var large = 0;
+    var human = 0;
+    var totalTime = 0.0;
+    var victory = false;
+
     public static var night = 0;
 
     public function new(p: Object) {
@@ -61,6 +68,8 @@ class Sky extends Object implements Updateable implements MessageListener {
     }
 
     public function update(dt:Float):Bool {
+        if (victory) return false;
+        totalTime += dt;
 
         if (!canSleep) {
             timeElapsed += dt;
@@ -94,7 +103,6 @@ class Sky extends Object implements Updateable implements MessageListener {
             }
         }
             
-
         return false;
     }
 
@@ -124,8 +132,38 @@ class Sky extends Object implements Updateable implements MessageListener {
                 sleeping = true;
                 Main.tweenManager.delay(3, () -> newDay()).start();
             }
-        } if (Std.isOfType(msg, Restart))
-            night = 0;
+        }
+        // if (Std.isOfType(msg, Restart))
+        //     night = 0;
+        if (Std.isOfType(msg, SmallBeastDeath))
+            small++;
+        if (Std.isOfType(msg, LargeBeastDeath))
+            large++;
+        if (Std.isOfType(msg, HumanDeath))
+            human++;
+        if (Std.isOfType(msg, Victory)) {
+            MessageManager.send(new PauseHunger());
+            victory = true;
+
+            Main.tweenManager.animateTo(dark, {alpha: 1}, 1).start();
+            text.y -= 100;
+            var labels = new Text(DefaultFont.get(), text);
+            labels.x = -100;
+            labels.y = 50;
+            labels.textAlign = Left;
+            labels.text = 'small beasts killed:\nlarge beasts killed:\nhumans killed:\nnights passed:\ntotal time taken:';
+            labels.visible = false;
+
+            var stats = new Text(DefaultFont.get(), text);
+            stats.x = 100;
+            stats.y = 50;
+            stats.textAlign = Right;
+            stats.text = '$small\n$large\n$human\n$night\n${Math.round(totalTime)}';
+            stats.visible = false;
+            Main.tweenManager.delay(1, () -> text.text = "you acquired Agriculture!\nyou have survived!\n\n").start();
+            Main.tweenManager.delay(1, () -> labels.visible = true).start();
+            Main.tweenManager.delay(1, () -> stats.visible = true).start();
+        }
         return false;
     }
 }

@@ -92,6 +92,7 @@ class Porcupine extends Object implements Updateable implements MessageListener 
         var tmp = body.tile.xFlip;
         body.tile = Res.img.PorcDead.toTile().center();
         body.tile.xFlip = tmp;
+        MessageManager.send(new SmallBeastDeath());
     }
 
     function pointCollisionCheck(point: Vector2D): Bool {

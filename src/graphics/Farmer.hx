@@ -148,6 +148,7 @@ class Farmer extends Object implements Updateable implements MessageListener {
     function die() {
         Main.tweenManager.animateTo(body, {alpha: 0}, 3).start();
         Main.tweenManager.animateTo(body, {y: y-10}, 3).start();
+        MessageManager.send(new HumanDeath());
     }
 
     function pointCollisionCheck(point: Vector2D): Bool {

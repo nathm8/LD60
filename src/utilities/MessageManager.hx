@@ -12,6 +12,9 @@ class Restart extends Message {}
 class AnimalEaten extends Message {}
 class PauseHunger extends Message {}
 class UnpauseHunger extends Message {}
+class SmallBeastDeath extends Message {}
+class LargeBeastDeath extends Message {}
+class HumanDeath extends Message {}
 class MousePush extends Message {
     public var event: Event;
     public var scenePosition: Vector2D;
