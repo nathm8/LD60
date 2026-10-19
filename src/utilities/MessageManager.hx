@@ -64,6 +64,10 @@ class ThrowSpear extends Message {
     public var pos: Vector2D;
     public function new(p: Vector2D) {super(); pos = p;}
 }
+class ShootBow extends Message {
+    public var pos: Vector2D;
+    public function new(p: Vector2D) {super(); pos = p;}
+}
 class WeaponDamageCheck extends Message {
     public var pos: Vector2D;
     public var damage: Float;

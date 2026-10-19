@@ -1,5 +1,6 @@
 package gamelogic;
 
+import graphics.Arrow;
 import graphics.Hut;
 import graphics.Porcupine;
 import graphics.Farmer;
@@ -50,8 +51,6 @@ class GameScene extends Scene implements MessageListener {
             updateables.push(p);
         }
 
-        spawnFarm();
-
         updateables.push(new Sky(this));
 
         splashScreen = new SplashScreen(this);
@@ -86,7 +85,8 @@ class GameScene extends Scene implements MessageListener {
     }
 
     function spawnFarm() {
-        var center = new Vector2D(800, 450);
+        var r = RNGManager.randomAngle();
+        var center = new Vector2D(2600 + RNGManager.random(1000), 0).rotate(r);
 
         var prev = center;
         for (x in 0...150) {
@@ -137,6 +137,10 @@ class GameScene extends Scene implements MessageListener {
         if (Std.isOfType(msg, ThrowSpear)) {
             var pos = cast(msg, ThrowSpear).pos;
             updateables.push(new SpearProjectile(pos, background));
+        }
+        if (Std.isOfType(msg, ShootBow)) {
+            var pos = cast(msg, ShootBow).pos;
+            updateables.push(new Arrow(pos, background));
         }
         if (Std.isOfType(msg, KeyUp) && splash) {
             splash = false;

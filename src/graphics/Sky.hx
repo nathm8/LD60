@@ -1,5 +1,6 @@
 package graphics;
 
+import utilities.RNGManager;
 import hxd.res.DefaultFont;
 import utilities.MessageManager;
 import hxd.Key;
@@ -119,16 +120,20 @@ class Sky extends Object implements Updateable implements MessageListener {
     }
 
     public function receive(msg:Message):Bool {
+        var crops = ["maize", "chickpeas", "barley", "vetch", "figs"];
         if (Std.isOfType(msg, KeyUp)) {
             var e = cast(msg, KeyUp);
             if (e.keycode == Key.Z) {
                 if (!canSleep || sleeping) return false;
-                if (night == 0) {
+                night++;
+                if (night == 1) {
                     MessageManager.send(new NightPasses(night));
                     text.text = "you invented Spear!\nclick to throw";
+                } else if (night == 2) {
+                    MessageManager.send(new NightPasses(night));
+                    text.text = "you invented Bow!\nclick to shoot";
                 } else
-                    text.text = "";
-                night++;
+                    text.text = 'you dream of ${RNGManager.pick_random(crops)}';
                 sleeping = true;
                 Main.tweenManager.delay(3, () -> newDay()).start();
             }

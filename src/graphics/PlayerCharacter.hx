@@ -1,5 +1,6 @@
 package graphics;
 
+import h2d.Graphics;
 import utilities.InverseKinematics;
 import hxd.Window;
 import utilities.MessageManager;
@@ -45,6 +46,10 @@ class PlayerCharacter extends Object implements Updateable implements MessageLis
     var lowerArm: Bitmap;
     var weapon: Bitmap;
     var weaponPoint: Object;
+    var weaponPoint2: Object; // only used for bow
+    var backArm: Bitmap;
+    var stringPoint: Object;
+    var bowString: Graphics;
     var bones = new Array<Bone>();
     var equiptWeapon: WeaponType;
 
@@ -84,7 +89,23 @@ class PlayerCharacter extends Object implements Updateable implements MessageLis
 
         bones = [{length: 20, angle: 0}, {length: 19, angle: 0}, {length: 22, angle: Math.PI/2}];
 
+        t = Res.img.BowBackarm.toTile();
+        t.setCenterRatio(0.5, 0.2);
+        backArm = new Bitmap(t, body);
+        backArm.x = -15;
+        backArm.y = -50;
+        backArm.visible = false;
+        stringPoint = new Object(backArm);
+        stringPoint.x = 13;
+
         hungerBar = new HungerBar(this);
+
+        if (Sky.night == 1)
+            equiptSpear();
+        if (Sky.night > 1)
+            equiptBow();
+
+        equiptBow();
 
         MessageManager.addListener(this);
     }
@@ -115,6 +136,29 @@ class PlayerCharacter extends Object implements Updateable implements MessageLis
         equiptWeapon = Spear;
     }
 
+    public function equiptBow() {
+        weapon.remove();
+
+        var t = Res.img.Bow.toTile();
+        t.setCenterRatio(0.8, 0.5);
+        weapon = new Bitmap(t, lowerArm);
+        weapon.y = 20;
+
+        // used for drawing string intead of damage detection
+        weaponPoint = new Object(weapon);
+        weaponPoint.x = -25;
+        weaponPoint.y = -62;
+        weaponPoint2 = new Object(weapon);
+        weaponPoint2.x = -25;
+        weaponPoint2.y = 62;
+
+        bowString = new Graphics();
+        addChildAt(bowString, 1);
+        
+        bones[2].length = 0;
+        equiptWeapon = Bow;
+    }
+
     public function update(dt: Float):Bool {
         if (hunger == 0) return false;
 
@@ -136,13 +180,38 @@ class PlayerCharacter extends Object implements Updateable implements MessageLis
         }
         
         // do IK
-        var target = upperArm.getAbsPos().getPosition() - new Vector2D(Window.getInstance().mouseX, Window.getInstance().mouseY);
+        var mouse_pos = new Vector2D(Window.getInstance().mouseX, Window.getInstance().mouseY);
+        var target = upperArm.getAbsPos().getPosition() - mouse_pos;
         InverseKinematics.solve(bones, target);
         var chain = [upperArm, lowerArm, weapon];
         for (i in 0...3)
             chain[i].rotation = bones[i].angle;
         upperArm.rotation += Math.PI/2;
         weapon.rotation += Math.PI/2;
+
+        if (equiptWeapon == Bow) {
+            if (isAttacking) {
+
+                backArm.rotation = (mouse_pos - backArm.getAbsPos().getPosition()).angle();
+
+                bowString.clear();
+                bowString.lineStyle(2, 0xe9ddaf);
+                var p = weaponPoint.getAbsPos().getPosition();
+                bowString.moveTo(p.x, p.y);
+                p = stringPoint.getAbsPos().getPosition();
+                bowString.lineTo(p.x, p.y);
+                p = weaponPoint2.getAbsPos().getPosition();
+                bowString.lineTo(p.x, p.y);
+
+            } else {
+                bowString.clear();
+                bowString.lineStyle(2, 0xe9ddaf);
+                var p = weaponPoint.getAbsPos().getPosition();
+                bowString.moveTo(p.x, p.y);
+                p = weaponPoint2.getAbsPos().getPosition();
+                bowString.lineTo(p.x, p.y);
+            }
+        }
 
         // Move
         var dirc = new Vector2D();
@@ -184,14 +253,16 @@ class PlayerCharacter extends Object implements Updateable implements MessageLis
 
         // check for damage
         if (!hungerPaused) {
-            var mult = 0.5;
-            if (equiptWeapon == Spear) mult = 1.0;
-            var p = weaponPoint.getAbsPos().getPosition();
-
-            var damage = mult*((previousWeaponPointPosition - p).magnitude - 10);
-            if (damage > 0)
-                MessageManager.send(new WeaponDamageCheck(p, damage));
-            previousWeaponPointPosition = p;
+            if (equiptWeapon != Bow) {
+                var mult = 0.5;
+                if (equiptWeapon == Spear) mult = 1.0;
+                var p = weaponPoint.getAbsPos().getPosition();
+                
+                var damage = mult*((previousWeaponPointPosition - p).magnitude - 10);
+                if (damage > 0)
+                    MessageManager.send(new WeaponDamageCheck(p, damage));
+                previousWeaponPointPosition = p;
+            }
 
             // update hunger
             hunger = Math.max(hunger - dt/75, 0);
@@ -227,18 +298,22 @@ class PlayerCharacter extends Object implements Updateable implements MessageLis
             if (equiptWeapon == Spear) {
                 MessageManager.send(new ThrowSpear(weapon.getAbsPos().getPosition()));
                 equiptKnife();
+            } if (equiptWeapon == Bow) {
+                MessageManager.send(new ShootBow(weapon.getAbsPos().getPosition()));
             }
         } if (Std.isOfType(msg, KeyDown)) {
             var e = cast(msg, KeyDown);
             if (e.keycode == Key.LEFT || e.keycode == Key.A) {
                 upperArm.x = -15;
+                backArm.x = 15;
                 movingLeft = true;
                 walk.xFlip = true;
                 stand.xFlip = true;
             }
             if (e.keycode == Key.RIGHT || e.keycode == Key.D) {
-                movingRight = true;
                 upperArm.x = 15;
+                backArm.x = -15;
+                movingRight = true;
                 walk.xFlip = false;
                 stand.xFlip = false;
             }
@@ -258,14 +333,32 @@ class PlayerCharacter extends Object implements Updateable implements MessageLis
                 movingDown = false;
         } if (Std.isOfType(msg, MousePush)) {
             isAttacking = true;
+            if (equiptWeapon == Bow) {
+                var tmp = body.tile.xFlip;
+                stand = Res.img.StandBow.toTile().center();
+                stand.xFlip = tmp;
+                walk = Res.img.WalkBow.toTile().center();
+                walk.xFlip = tmp;
+                backArm.visible = true;
+            }
         } if (Std.isOfType(msg, MouseRelease)) {
             isAttacking = false;
+            if (equiptWeapon == Bow) {
+                var tmp = body.tile.xFlip;
+                stand = Res.img.Stand.toTile().center();
+                stand.xFlip = tmp;
+                walk = Res.img.Walk.toTile().center();
+                walk.xFlip = tmp;
+                backArm.visible = false;
+            }
         } if (Std.isOfType(msg, AnimalEaten)) {
             hunger = Math.min(hunger + 0.2, 1.0);
         } if (Std.isOfType(msg, NightPasses)) {
             var night = cast(msg, NightPasses).number;
-            if (night == 0)
+            if (night == 1)
                 equiptSpear();
+            if (night > 1)
+                equiptBow();
         }
         return false;
     }
