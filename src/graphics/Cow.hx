@@ -99,7 +99,7 @@ class Cow extends Object implements Updateable implements MessageListener {
     }
 
     function flee() {
-        if (behaviour == Flee) return;
+        if (behaviour == Flee || health <= 0) return;
         behaviour = Flee;
         body.rotation = 0;
         var speed = 400 + RNGManager.srand(100 + 50*Sky.night, true);
@@ -111,6 +111,7 @@ class Cow extends Object implements Updateable implements MessageListener {
     }
 
     function chase() {
+        if (health <= 0) return;
         body.rotation = 0;
         behaviour = Chase;
         var tmp = body.tile.xFlip;

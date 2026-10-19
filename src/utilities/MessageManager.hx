@@ -95,6 +95,8 @@ class MainMenu extends Message {}
 class TogglePause extends Message {}
 class SplashScreenStart extends Message {}
 class SplashScreenEnd extends Message {}
+class NightBegins extends Message {}
+class NightEnds extends Message {}
 
 interface MessageListener {
     public function receive(msg: Message): Bool;

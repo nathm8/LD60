@@ -99,6 +99,7 @@ class Sky extends Object implements Updateable implements MessageListener {
             
             if (r == 1) {
                 MessageManager.send(new PauseHunger());
+                MessageManager.send(new NightBegins());
                 text.text = "press Z to Zzz";
                 canSleep = true;
             }
@@ -117,6 +118,7 @@ class Sky extends Object implements Updateable implements MessageListener {
         Main.tweenManager.animateTo(dark, {alpha: 0}, 1).start();
         Main.tweenManager.delay(1, () -> text.text = "").start();
         Main.tweenManager.delay(1, () -> MessageManager.send(new UnpauseHunger())).start();
+        Main.tweenManager.delay(1, () -> MessageManager.send(new NightEnds())).start();
     }
 
     public function receive(msg:Message):Bool {
@@ -126,11 +128,10 @@ class Sky extends Object implements Updateable implements MessageListener {
             if (e.keycode == Key.Z) {
                 if (!canSleep || sleeping) return false;
                 night++;
+                MessageManager.send(new NightPasses(night));
                 if (night == 1) {
-                    MessageManager.send(new NightPasses(night));
                     text.text = "you invented Spear!\nclick to throw";
                 } else if (night == 2) {
-                    MessageManager.send(new NightPasses(night));
                     text.text = "you invented Bow!\nclick to shoot";
                 } else
                     text.text = 'you dream of ${RNGManager.pick_random(crops)}';

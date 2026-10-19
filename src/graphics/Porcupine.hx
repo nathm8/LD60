@@ -63,6 +63,10 @@ class Porcupine extends Object implements Updateable implements MessageListener 
                 body.rotation += 2*dt;
             else
                 body.rotation -= 2*dt;
+            if (timeInBehaviour > totalTimeInBehaviour) {
+                behaviour = Idle;
+                body.rotation = 0;
+            }
         }
         return false;
     }
@@ -83,7 +87,7 @@ class Porcupine extends Object implements Updateable implements MessageListener 
         velocity = new Vector2D(RNGManager.srand(1), RNGManager.srand(1)).normalize()*speed;
         body.tile.xFlip = velocity.x < 0;
         timeInBehaviour = 0;
-        totalTimeInBehaviour = velocity.magnitude;
+        totalTimeInBehaviour = 4;
     }
 
     public function delete() {}

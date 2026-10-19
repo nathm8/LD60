@@ -3,7 +3,6 @@ package gamelogic;
 import graphics.Cow;
 import graphics.Arrow;
 import graphics.Hut;
-import graphics.Porcupine;
 import graphics.Farmer;
 import graphics.SpearProjectile;
 import graphics.Doodad;
@@ -56,6 +55,10 @@ class GameScene extends Scene implements MessageListener {
 
         splashScreen = new SplashScreen(this);
         MessageManager.send(new SplashScreenStart());
+
+        // for respawns
+        if (Sky.night >= 2)
+            spawnFarm();
     }
 
     function spawnPorcs() {
@@ -105,6 +108,7 @@ class GameScene extends Scene implements MessageListener {
     }
 
     function spawnFarm() {
+        trace("spawn farm");
         var r = RNGManager.randomAngle();
         var center = new Vector2D(2600 + RNGManager.random(1000), 0).rotate(r);
 
@@ -139,7 +143,7 @@ class GameScene extends Scene implements MessageListener {
             spawnDoodads();
             if (Sky.night == 0)
                 spawnPorcs();
-            else if (Sky.night == 1) {
+            else {
                 if (RNGManager.random(2) == 0)
                     spawnPorcs();
                 else
@@ -180,6 +184,7 @@ class GameScene extends Scene implements MessageListener {
         }
         if (Std.isOfType(msg, NightPasses)) {
             var n = cast(msg, NightPasses).number;
+            trace(n);
             if (n == 1)
                 spawnCows();
             if (n >= 2)
