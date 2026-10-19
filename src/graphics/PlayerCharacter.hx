@@ -30,6 +30,7 @@ class PlayerCharacter extends Object implements Updateable implements MessageLis
     var isMoving(get, null): Bool;
 
     var isAttacking = false;
+    var hungerPaused = false;
 
     var animationTime = 0.0;
     var frameTime = 0.0;
@@ -182,20 +183,22 @@ class PlayerCharacter extends Object implements Updateable implements MessageLis
         MessageManager.send(new PlayerCollisionCheck(this));
 
         // check for damage
-        var mult = 0.5;
-        if (equiptWeapon == Spear) mult = 1.0;
-        var p = weaponPoint.getAbsPos().getPosition();
+        if (!hungerPaused) {
+            var mult = 0.5;
+            if (equiptWeapon == Spear) mult = 1.0;
+            var p = weaponPoint.getAbsPos().getPosition();
 
-        var damage = mult*((previousWeaponPointPosition - p).magnitude - 10);
-        if (damage > 0)
-            MessageManager.send(new WeaponDamageCheck(p, damage));
-        previousWeaponPointPosition = p;
+            var damage = mult*((previousWeaponPointPosition - p).magnitude - 10);
+            if (damage > 0)
+                MessageManager.send(new WeaponDamageCheck(p, damage));
+            previousWeaponPointPosition = p;
 
-        // update hunger
-        hunger = Math.max(hunger - dt/75, 0);
-        hungerBar.update(hunger);
-        if (hunger == 0)
-            Main.tweenManager.delay(5, () -> MessageManager.send(new Restart())).start();
+            // update hunger
+            hunger = Math.max(hunger - dt/75, 0);
+            hungerBar.update(hunger);
+            if (hunger == 0)
+                Main.tweenManager.delay(5, () -> MessageManager.send(new Restart())).start();
+        }
 
         if (hunger == 0) {
             Main.tweenManager.animateTo(body, {alpha: 0}, 3).start();
@@ -208,6 +211,10 @@ class PlayerCharacter extends Object implements Updateable implements MessageLis
     public function delete() {}
 
     public function receive(msg: Message):Bool {
+        if (Std.isOfType(msg, PauseHunger))
+            hungerPaused = true;
+        if (Std.isOfType(msg, UnpauseHunger))
+            hungerPaused = false;
         if (Std.isOfType(msg, MouseRelease)) {
             if (equiptWeapon == Spear) {
                 MessageManager.send(new ThrowSpear(weapon.getAbsPos().getPosition()));

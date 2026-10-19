@@ -126,7 +126,7 @@ class Porcupine extends Object implements Updateable implements MessageListener 
                 body.tile = Res.img.PorcEaten.toTile().center();
                 body.tile.xFlip = tmp;
                 MessageManager.send(new AnimalEaten());
-            } if (dist < 200 && Sky.night > 0) {
+            } if (dist < 150 + Sky.night*50 && Sky.night > 0) {
                 if (health <= 0) return false;
                 flee();
             }

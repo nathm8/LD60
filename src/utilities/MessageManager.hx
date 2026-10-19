@@ -10,6 +10,8 @@ class Message {public function new(){}}
 class Victory extends Message {}
 class Restart extends Message {}
 class AnimalEaten extends Message {}
+class PauseHunger extends Message {}
+class UnpauseHunger extends Message {}
 class MousePush extends Message {
     public var event: Event;
     public var scenePosition: Vector2D;

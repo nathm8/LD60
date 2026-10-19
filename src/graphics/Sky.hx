@@ -88,6 +88,7 @@ class Sky extends Object implements Updateable implements MessageListener {
             }
             
             if (r == 1) {
+                MessageManager.send(new PauseHunger());
                 text.text = "press Z to Zzz";
                 canSleep = true;
             }
@@ -106,6 +107,7 @@ class Sky extends Object implements Updateable implements MessageListener {
         timeElapsed = 0;
         Main.tweenManager.animateTo(dark, {alpha: 0}, 1).start();
         Main.tweenManager.delay(1, () -> text.text = "").start();
+        Main.tweenManager.delay(1, () -> MessageManager.send(new UnpauseHunger())).start();
     }
 
     public function receive(msg:Message):Bool {
