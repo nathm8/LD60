@@ -50,6 +50,7 @@ class PlayerCharacter extends Object implements Updateable implements MessageLis
     var backArm: Bitmap;
     var stringPoint: Object;
     var bowString: Graphics;
+    var nockedArrow: Bitmap;
     var bones = new Array<Bone>();
     var equiptWeapon: WeaponType;
 
@@ -95,8 +96,14 @@ class PlayerCharacter extends Object implements Updateable implements MessageLis
         backArm.x = -15;
         backArm.y = -50;
         backArm.visible = false;
+
         stringPoint = new Object(backArm);
         stringPoint.x = 13;
+
+        t = Res.img.SpearProjectile.toTile();
+        t.setCenterRatio(0, 0.5);
+        nockedArrow = new Bitmap(t, stringPoint);
+        nockedArrow.scale(0.5);
 
         hungerBar = new HungerBar(this);
 
@@ -181,6 +188,13 @@ class PlayerCharacter extends Object implements Updateable implements MessageLis
         
         // do IK
         var mouse_pos = new Vector2D(Window.getInstance().mouseX, Window.getInstance().mouseY);
+        var body_pos = body.getAbsPos().getPosition();
+        // prevent firing bow backwards
+        if (equiptWeapon == Bow && isAttacking) {
+            if (body.tile.xFlip && mouse_pos.x > body_pos.x ||
+                !body.tile.xFlip && mouse_pos.x < body_pos.x)
+                cancelAttack();
+        }
         var target = upperArm.getAbsPos().getPosition() - mouse_pos;
         InverseKinematics.solve(bones, target);
         var chain = [upperArm, lowerArm, weapon];
@@ -275,9 +289,20 @@ class PlayerCharacter extends Object implements Updateable implements MessageLis
     }
 
     function die() {
+        bowString?.clear();
         Main.tweenManager.animateTo(body, {alpha: 0}, 3).start();
         Main.tweenManager.animateTo(body, {y: y-10}, 3).start();
         Main.tweenManager.delay(5, () -> MessageManager.send(new Restart())).start();
+    }
+
+    function cancelAttack() {
+        var tmp = body.tile.xFlip;
+        stand = Res.img.Stand.toTile().center();
+        stand.xFlip = tmp;
+        walk = Res.img.Walk.toTile().center();
+        walk.xFlip = tmp;
+        backArm.visible = false;
+        isAttacking = false;
     }
 
     public function delete() {}
@@ -298,8 +323,9 @@ class PlayerCharacter extends Object implements Updateable implements MessageLis
             if (equiptWeapon == Spear) {
                 MessageManager.send(new ThrowSpear(weapon.getAbsPos().getPosition()));
                 equiptKnife();
-            } if (equiptWeapon == Bow) {
+            } if (equiptWeapon == Bow && isAttacking) {
                 MessageManager.send(new ShootBow(weapon.getAbsPos().getPosition()));
+                cancelAttack();
             }
         } if (Std.isOfType(msg, KeyDown)) {
             var e = cast(msg, KeyDown);
@@ -340,16 +366,7 @@ class PlayerCharacter extends Object implements Updateable implements MessageLis
                 walk = Res.img.WalkBow.toTile().center();
                 walk.xFlip = tmp;
                 backArm.visible = true;
-            }
-        } if (Std.isOfType(msg, MouseRelease)) {
-            isAttacking = false;
-            if (equiptWeapon == Bow) {
-                var tmp = body.tile.xFlip;
-                stand = Res.img.Stand.toTile().center();
-                stand.xFlip = tmp;
-                walk = Res.img.Walk.toTile().center();
-                walk.xFlip = tmp;
-                backArm.visible = false;
+                
             }
         } if (Std.isOfType(msg, AnimalEaten)) {
             hunger = Math.min(hunger + 0.2, 1.0);
