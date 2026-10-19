@@ -71,8 +71,11 @@ class StartLevel extends Message {
     public var delete: Bool;
     public function new(i: Int, d=false) {super(); levelId = i; delete=d;}
 }
-class EnableProgression extends Message {}
-class DisableProgression extends Message {}
+class PlayerPositionRequest extends Message {}
+class PlayerPosition extends Message {
+    public var pos: Vector2D;
+    public function new(p: Vector2D) {super(); pos = p;}
+}
 class ToggleMuteGlobal extends Message {}
 class MainMenu extends Message {}
 class TogglePause extends Message {}

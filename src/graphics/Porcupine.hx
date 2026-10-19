@@ -10,7 +10,7 @@ import h2d.Bitmap;
 import gamelogic.Updateable;
 import h2d.Object;
 
-enum Behaviour {
+enum PorcBehaviour {
     Idle;
     Wander;
     Flee;

@@ -202,7 +202,7 @@ class PlayerCharacter extends Object implements Updateable implements MessageLis
 
         if (hunger == 0) {
             Main.tweenManager.animateTo(body, {alpha: 0}, 3).start();
-            Main.tweenManager.animateTo(body, {y: y-20}, 3).start();
+            Main.tweenManager.animateTo(body, {y: y-10}, 3).start();
         }
 
         return false;
@@ -211,6 +211,8 @@ class PlayerCharacter extends Object implements Updateable implements MessageLis
     public function delete() {}
 
     public function receive(msg: Message):Bool {
+        if (Std.isOfType(msg, PlayerPositionRequest))
+            MessageManager.send(new PlayerPosition(body.getAbsPos().getPosition()));
         if (Std.isOfType(msg, PauseHunger))
             hungerPaused = true;
         if (Std.isOfType(msg, UnpauseHunger))

@@ -1,11 +1,11 @@
 package gamelogic;
 
+import graphics.Porcupine;
+import graphics.Farmer;
 import graphics.SpearProjectile;
 import graphics.Doodad;
-import h2d.Bitmap;
 import utilities.Vector2D;
 import graphics.Tracks;
-import hxd.Res;
 import graphics.SplashScreen;
 import graphics.BloodSpray;
 import graphics.Sky;
@@ -48,6 +48,9 @@ class GameScene extends Scene implements MessageListener {
             p.y = 400 + RNGManager.srand(200);
             updateables.push(p);
         }
+
+        var f = new Farmer(background);
+        updateables.push(f);
 
         updateables.push(new Sky(this));
 
