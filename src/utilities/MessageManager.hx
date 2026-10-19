@@ -53,6 +53,10 @@ class SpawnBloodSpray extends Message {
     public var damage: Float;
     public function new(p: Vector2D, d: Float) {super(); pos = p; damage = d;}
 }
+class PlayerHurt extends Message {
+    public var damage: Float;
+    public function new(d: Float) {super(); damage = d;}
+}
 class ThrowSpear extends Message {
     public var pos: Vector2D;
     public function new(p: Vector2D) {super(); pos = p;}

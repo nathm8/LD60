@@ -58,7 +58,7 @@ class Farmer extends Object implements Updateable implements MessageListener {
         tileToHitbox[walk[1]]   = new PixelsCollider(Res.img.FarmerWalkHitboxFlip.getPixels());
         tileToHitbox[attack[1]] = new PixelsCollider(Res.img.FarmerAttackHitboxFlip.getPixels());
 
-        scale(1 + RNGManager.srand(0.2));
+        scale(1 - RNGManager.srand(0.2, true));
 
         MessageManager.addListener(this);
     }
@@ -125,8 +125,10 @@ class Farmer extends Object implements Updateable implements MessageListener {
             frameTime += dt;
             if (frameTime > frameTimeTotal) {
                 frameTime = 0;
-                if (stand.contains(body.tile))
+                if (stand.contains(body.tile)) {
                     body.tile = attack[flip_i];
+                    MessageManager.send(new PlayerHurt(0.2));
+                }
                 else
                     body.tile = stand[flip_i];
             }
@@ -137,7 +139,6 @@ class Farmer extends Object implements Updateable implements MessageListener {
     function wander() {
         behaviour = Wander;
         velocity = new Vector2D(RNGManager.srand(50), RNGManager.srand(50));
-        body.tile.xFlip = velocity.x < 0;
         timeInBehaviour = 0;
         totalTimeInBehaviour = 1 + RNGManager.srand(2, true);
     }

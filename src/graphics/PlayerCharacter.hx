@@ -196,21 +196,27 @@ class PlayerCharacter extends Object implements Updateable implements MessageLis
             // update hunger
             hunger = Math.max(hunger - dt/75, 0);
             hungerBar.update(hunger);
-            if (hunger == 0)
-                Main.tweenManager.delay(5, () -> MessageManager.send(new Restart())).start();
         }
 
-        if (hunger == 0) {
-            Main.tweenManager.animateTo(body, {alpha: 0}, 3).start();
-            Main.tweenManager.animateTo(body, {y: y-10}, 3).start();
-        }
+        if (hunger == 0) die();
 
         return false;
+    }
+
+    function die() {
+        Main.tweenManager.animateTo(body, {alpha: 0}, 3).start();
+        Main.tweenManager.animateTo(body, {y: y-10}, 3).start();
+        Main.tweenManager.delay(5, () -> MessageManager.send(new Restart())).start();
     }
 
     public function delete() {}
 
     public function receive(msg: Message):Bool {
+        if (Std.isOfType(msg, PlayerHurt)) {
+            hunger = Math.max(hunger - cast(msg, PlayerHurt).damage, 0);
+            hungerBar.update(hunger, true);
+            if (hunger == 0) die();
+        }
         if (Std.isOfType(msg, PlayerPositionRequest))
             MessageManager.send(new PlayerPosition(body.getAbsPos().getPosition()));
         if (Std.isOfType(msg, PauseHunger))

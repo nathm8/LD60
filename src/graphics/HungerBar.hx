@@ -40,13 +40,17 @@ class HungerBar extends Object {
         text.textAlign = Center;
     }
 
-    public function update(percent: Float) {
+    public function update(percent: Float, is_damage=false) {
         progress.clear();
         progress.beginFill(0xAA0000);
         progress.drawRect(-200, -25, 400*percent, 50);
 
-        if (percent == 0)
-            text.text = "You Starved";
+        if (percent == 0) {
+            if (is_damage)
+                text.text = "You are Slain";
+            else
+                text.text = "You Starved";
+        }
     }
 
 }
